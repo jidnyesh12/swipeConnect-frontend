@@ -75,6 +75,36 @@ const Request = () => {
   };
 
   const renderLinkedInCard = (person, isReceived = true, requestId = null) => {
+    // Handle null person case
+    if (!person) {
+      return (
+        <div
+          key={requestId}
+          className="card p-6 bg-red-50 border border-red-200"
+        >
+          <div className="text-center">
+            <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-2">
+              <svg
+                className="w-6 h-6 text-red-600"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </div>
+            <p className="text-red-600 font-medium">User data unavailable</p>
+            <p className="text-red-500 text-sm">
+              This user may have been deleted
+            </p>
+          </div>
+        </div>
+      );
+    }
+
     const { _id, firstName, lastName, about, photourl, skills, age, gender } =
       person;
 
@@ -182,7 +212,12 @@ const Request = () => {
   }
 
   const currentData = activeTab === "received" ? requests : sentRequests;
-  const hasData = currentData && currentData.length > 0;
+  // Filter out requests with null users before checking if we have data
+  const validData =
+    currentData?.filter((request) =>
+      activeTab === "received" ? request.fromUserId : request.toUserId
+    ) || [];
+  const hasData = validData.length > 0;
 
   return (
     <div className="min-h-screen bg-primary p-4">
@@ -319,12 +354,16 @@ const Request = () => {
         {hasData && (
           <div className="space-y-4">
             {activeTab === "received"
-              ? requests.map((request) =>
-                  renderLinkedInCard(request.fromUserId, true, request._id)
-                )
-              : sentRequests.map((request) =>
-                  renderLinkedInCard(request.toUserId, false, request._id)
-                )}
+              ? requests
+                  .filter((request) => request.fromUserId) // Filter out null users
+                  .map((request) =>
+                    renderLinkedInCard(request.fromUserId, true, request._id)
+                  )
+              : sentRequests
+                  .filter((request) => request.toUserId) // Filter out null users
+                  .map((request) =>
+                    renderLinkedInCard(request.toUserId, false, request._id)
+                  )}
           </div>
         )}
       </div>

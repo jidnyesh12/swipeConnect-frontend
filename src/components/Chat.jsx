@@ -327,7 +327,7 @@ const Chat = () => {
       </div>
 
       {/* Input Box */}
-      <div className="bg-white border-t-4 border-black p-6 shadow-[0_-4px_0px_0px_#000]">
+      <div className="bg-white border-t-4 border-black p-6 shadow-[0_-4px_0px_0px_#000] mb-4">
         <div className="flex items-end gap-4">
           <div className="flex-1">
             <div className="relative">

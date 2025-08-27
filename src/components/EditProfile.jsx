@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import ProfileCard from "./ProfileCard";
+import PhotoUpload from "./PhotoUpload";
 import { useDispatch, useSelector } from "react-redux";
 import { BASE_URL } from "../utils/constant";
 import axios from "axios";
@@ -19,7 +20,24 @@ const EditProfile = () => {
   const [error, setError] = useState("");
   const [isSelf, setIsSelf] = useState(true);
   const [toast, setToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const handlePhotoUpdate = (newPhotoUrl, updatedUser) => {
+    setPhotourl(newPhotoUrl);
+    if (updatedUser) {
+      dispatch(adduser(updatedUser));
+    }
+    setToastMessage("Photo uploaded successfully!");
+    setToast(true);
+    setTimeout(() => {
+      setToast(false);
+    }, 3000);
+  };
+
+  const handlePhotoError = (errorMessage) => {
+    setError(errorMessage);
+  };
 
   const handleSave = async (e) => {
     setError("");
@@ -40,6 +58,7 @@ const EditProfile = () => {
         }
       );
       dispatch(adduser(res?.data?.body));
+      setToastMessage("Profile updated successfully!");
       setToast(true);
       setTimeout(() => {
         setToast(false);
@@ -178,16 +197,29 @@ const EditProfile = () => {
                       </div>
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-2">
-                        Profile Photo URL
+                      <label className="block text-sm font-semibold text-slate-700 mb-4">
+                        Profile Photo
                       </label>
-                      <input
-                        type="url"
-                        placeholder="Enter photo URL"
-                        className="w-full p-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200 bg-white"
-                        value={photourl}
-                        onChange={(e) => setPhotourl(e.target.value)}
+                      <PhotoUpload
+                        currentPhoto={photourl}
+                        onPhotoUpdate={handlePhotoUpdate}
+                        onError={handlePhotoError}
+                        disabled={loading}
                       />
+
+                      {/* Manual URL Input (Optional) */}
+                      <div className="mt-6 pt-4 border-t border-slate-200">
+                        <label className="block text-xs font-medium text-slate-600 mb-2">
+                          Or enter photo URL manually:
+                        </label>
+                        <input
+                          type="url"
+                          placeholder="https://example.com/photo.jpg"
+                          className="w-full p-2 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200 bg-white"
+                          value={photourl || ""}
+                          onChange={(e) => setPhotourl(e.target.value)}
+                        />
+                      </div>
                     </div>
                   </div>
                   {error && (
@@ -237,17 +269,21 @@ const EditProfile = () => {
       </div>
 
       {toast && (
-        <div className="fixed top-4 right-4 z-50">
-          <div className="bg-green-600 text-white p-4 rounded-xl shadow-lg">
+        <div className="fixed top-4 right-4 z-50 animate-slide-in">
+          <div className="bg-green-600 text-white p-4 rounded-xl shadow-lg max-w-sm">
             <div className="flex items-center space-x-2">
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <svg
+                className="w-5 h-5 flex-shrink-0"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
                 <path
                   fillRule="evenodd"
                   d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
                   clipRule="evenodd"
                 />
               </svg>
-              <span className="font-medium">Profile updated successfully!</span>
+              <span className="font-medium">{toastMessage}</span>
             </div>
           </div>
         </div>
