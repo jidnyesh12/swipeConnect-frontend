@@ -19,9 +19,6 @@ const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const wakeup = async()=>{
-    await axios.get(BASE_URL);
-  }
 
   if (user) {
     navigate("/");
@@ -85,10 +82,20 @@ const Login = () => {
     }
   };
 
-  useEffect()
+  useEffect(() => {
+  // Redirect logged-in users to home
+  if (user) navigate("/");
 
-  if (user) {
-  }
+  // Optionally wake up backend on mount
+  const wakeUpBackend = async () => {
+    try {
+      await axios.get(BASE_URL);
+    } catch (err) {
+      console.log("Backend wakeup failed:", err);
+    }
+  };
+  wakeUpBackend();
+}, [user, navigate]);
 
   return (
     <div className="min-h-screen bg-primary flex items-center justify-center p-4">
