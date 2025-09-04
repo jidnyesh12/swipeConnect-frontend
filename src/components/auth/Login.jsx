@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BASE_URL } from "../../utils/constant";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -18,6 +18,10 @@ const Login = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const wakeup = async()=>{
+    await axios.get(BASE_URL);
+  }
 
   if (user) {
     navigate("/");
@@ -80,6 +84,8 @@ const Login = () => {
       setLoading(false);
     }
   };
+
+  useEffect()
 
   if (user) {
   }
