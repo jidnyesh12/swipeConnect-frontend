@@ -12,6 +12,9 @@ import Verification from "./components/verification";
 import Chat from "./components/Chat";
 
 function App() {
+
+  console.log("API URL:", import.meta.env.VITE_BASE_URL);
+  
   return (
     <>
       <Provider store={appStore}>
